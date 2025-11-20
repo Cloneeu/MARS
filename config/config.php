@@ -24,9 +24,9 @@
     // Retornar toda la configuracion 
     return [
         'db' => [
-            'host' => $env['DB_HOST'] ?? '',
-            'name' => $env['DB_NAME'] ?? '',
-            'user' => $env['DB_USER'] ?? '',
+            'host' => $env['DB_HOST'] ?? '', 
+            'name' => $env['DB_NAME'] ?? '', 
+            'user' => $env['DB_USER'] ?? '', 
             'pass' => $env['DB_PASS'] ?? '',
         ],
         
