@@ -4,7 +4,7 @@
     // Permitir solicitudes desde cualquier origen
     header('Access-Control-Allow-Origin: *');
     // Metodos HTTP permitidos
-    header('Access-Control-Allow-Methods: GET, POST, DELETE, PUT, PATCH, OPTIONS');
+    header('Access-Control-Allow-Methods: GET, POST, DELETE, PUT, OPTIONS');
     // Cabeceras permitidas
     header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
