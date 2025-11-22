@@ -136,7 +136,7 @@
         $result = mysqli_stmt_get_result($stmt);
 
         // Convertir el resultado a un arreglo
-        $productos = mysqli_fetch_assoc($result);
+        $productos = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
         mysqli_stmt_close($stmt);
         mysqli_free_result($result);
