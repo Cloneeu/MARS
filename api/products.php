@@ -260,8 +260,7 @@
         }
         
         // Obtener los datos del producto (puede ser PUT o PATCH)
-        $_PUT = [];
-        parse_str(file_get_contents('php://input'), $_PUT);
+        $_PUT = json_decode(file_get_contents('php://input'), true);
 
         // Obtener y validar los datos del producto
         $nombre = trim($_PUT['nombre'] ?? '');
