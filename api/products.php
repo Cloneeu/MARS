@@ -10,7 +10,8 @@
 
     $conn = get_db_connection();
 
-    switch ($method) {
+    switch ($method) 
+    {
         case 'GET':
             obtener_productos($conn, $id);
             break;

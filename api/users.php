@@ -10,7 +10,8 @@
 
     $conn = get_db_connection();
 
-    switch ($action) {
+    switch ($action) 
+    {
         case 'register':
             if ($method !== 'POST') 
             {
