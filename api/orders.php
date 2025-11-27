@@ -29,7 +29,7 @@
                 send_json(['ok' => false, 'message' => 'Metodo no permitido'], 405);
                 break;
             }
-            // obtener_ordenes($conn, $id);
+            obtener_ordenes($conn, $id);
             break;
         
         case 'update-status':
@@ -248,6 +248,69 @@
                 'message' => 'Error al crear la orden: ' . $e->getMessage()
             ], 400);
         }
+    }
+
+    /**
+     * Funcion para obtener todas las ordenes 
+     * Esto solo para admins :P
+     * @param mysqli La conexion a la base de datos
+     */
+    function obtener_ordenes($conn)
+    {
+        $usuario = obtener_usuario_actual($conn);
+
+        if (!$usuario) 
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'No autorizado'
+            ], 401);
+            return;
+        }
+
+        // Verficar q sea admin
+        if ($usuario['rol'] !== 'admin') 
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'No tienes permiso para ver las ordenes :('
+            ], 403);
+            return;
+        }
+
+        $query = "SELECT o.id_orden, o.id_usuario, o.created_at, o.estado,
+                         u.nombre, u.apellido, u.email
+                  FROM ordenes o
+                  INNER JOIN usuarios u ON o.id_usuario = u.id_usuario";
+
+        $stmt = mysqli_prepare($conn, $query);
+
+        if (!$stmt) 
+        {
+            error_log('Error al preparar consulta de ordenes: ' . mysqli_error($conn));
+            send_json([
+                'ok' => false,
+                'message' => 'Error al obtener las ordenes'
+            ], 500);
+            return;
+        }
+
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $ordenes = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        mysqli_stmt_close($stmt);
+
+        // Agregar el total a cada orden, se utiliza referencia para modificar el array original y que se guarde en este
+        foreach ($ordenes as &$orden) 
+        {
+            $detalles = obtener_detalles_orden($conn, $orden['id_orden']);
+            $orden['total'] = calcular_total_orden($detalles);
+        }
+
+        send_json([
+            'ok' => true,
+            'data' => $ordenes
+        ], 200);
     }
 
     // HELPERS :)
