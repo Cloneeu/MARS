@@ -1,5 +1,5 @@
-const API_URL = 'http://localhost:8888/api/products.php'; 
-const UPLOADS_BASE_PATH = 'http://localhost:8888/uploads/'; 
+const API_URL = 'http://localhost:8888/mars/api/products.php'; 
+const UPLOADS_BASE_PATH = 'http://localhost:8888/mars/uploads/'; 
 
 
 document.addEventListener('DOMContentLoaded', () => {
