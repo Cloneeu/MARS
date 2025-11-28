@@ -59,6 +59,15 @@
             obtener_mis_ordenes($conn);
             break;
 
+        case 'total-sales':
+            if ($method !== 'GET') 
+            {
+                send_json(['ok' => false, 'message' => 'Metodo no permitido'], 405);
+                break;
+            }
+            obtener_total_ventas($conn);
+            break;
+
         default:
             send_json([
                 'ok' => false,
@@ -627,6 +636,68 @@
                 'message' => 'Error al cancelar la orden'
             ], 500);
         }
+    }
+
+    /**
+     * Funcion para obtener el total de ventas
+     * Esto solo para admins jujuy
+     * @param mysqli La conexion a la base de datos
+     */
+    function obtener_total_ventas($conn)
+    {
+        $usuario = obtener_usuario_actual($conn);
+
+        if (!$usuario) 
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'No autorizado'
+            ], 401);
+            return;
+        }
+
+        // Solo admins pueden ver el total de ventas
+        if ($usuario['rol'] !== 'admin') 
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'No tienes permiso para ver el total de ventas rufian!!!'
+            ], 403);
+            return;
+        }
+
+        // Obtener el total de ventas (solo ordenes pagadas o enviadas)
+        $query = "SELECT COUNT(DISTINCT o.id_orden) as total_ordenes,
+                         SUM(d.subtotal) as total_ventas
+                  FROM ordenes o
+                  INNER JOIN detalles_orden d 
+                    ON o.id_orden = d.id_orden
+                  WHERE o.estado IN ('pagada', 'enviada')";
+
+        $stmt = mysqli_prepare($conn, $query);
+
+        if (!$stmt) 
+        {
+            error_log('Error al preparar consulta de total de ventas: ' . mysqli_error($conn));
+            send_json([
+                'ok' => false,
+                'message' => 'Error al obtener el total de ventas'
+            ], 500);
+            return;
+        }
+
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $data = mysqli_fetch_assoc($result);
+        mysqli_stmt_close($stmt);
+
+        send_json([
+            'ok' => true,
+            'data' => [
+                'total_ordenes' => intval($data['total_ordenes']),
+                'total_ventas' => number_format(floatval($data['total_ventas']), 2)
+            ]
+        ], 200);
     }
 
     // HELPERS :)

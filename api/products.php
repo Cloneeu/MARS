@@ -7,13 +7,22 @@
     $method = $_SERVER['REQUEST_METHOD'];
     // Obtener el ID del producto si se proporciona
     $id = isset($_GET['id']) ? intval($_GET['id']) : null;
+    // Obtener la accion solicitada
+    $action = $_GET['action'] ?? '';
 
     $conn = get_db_connection();
 
     switch ($method) 
     {
         case 'GET':
-            obtener_productos($conn, $id);
+            if ($action === 'best-sellers') 
+            {
+                obtener_mas_vendidos($conn);
+            } 
+            else 
+            {
+                obtener_productos($conn, $id);
+            }
             break;
         
         case 'POST':
@@ -61,7 +70,8 @@
             $stmt = mysqli_prepare($conn, $query);
 
             // Por si falla la preparacion de la consulta :(
-            if (!$stmt) {
+            if (!$stmt) 
+            {
                 // Para ver el error completo en los logs
                 error_log('Error al preparar la consulta: ' . $query . ' @@@ ' . mysqli_error($conn));
 
@@ -109,7 +119,8 @@
         $stmt = mysqli_prepare($conn, $query);
 
         // Por si falla la preparacion de la consulta :(
-        if (!$stmt) {
+        if (!$stmt) 
+        {
             // Para ver el error completo en los logs
             error_log('Error al preparar la consulta: ' . $query . ' @@@ ' . mysqli_error($conn));
 
@@ -146,6 +157,63 @@
         // Devolver el resultado de la query
         send_json($productos, 200);
         return;
+    }
+
+    /**
+     * Funcion para obtener los productos mas vendidos
+     * @param mysqli Una conexion a la base de datos
+     */
+    function obtener_mas_vendidos($conn)
+    {
+        // Checar si se proporciono un LIMIT (por defecto puse 3 productos)
+        $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 3;
+
+        // La query para obtener los productos mas vendidos
+        $query = "SELECT p.id_producto, p.nombre, p.descripcion, p.precio, p.imagen, p.stock,
+                         SUM(d.cantidad) as total_vendido
+                  FROM productos p
+                  INNER JOIN detalles_orden d 
+                    ON p.id_producto = d.id_producto
+                  INNER JOIN ordenes o 
+                    ON d.id_orden = o.id_orden
+                    WHERE o.estado IN ('pagada', 'enviada')
+                  GROUP BY p.id_producto, p.nombre, p.descripcion, p.precio, p.imagen, p.stock
+                  ORDER BY total_vendido DESC
+                  LIMIT ?";
+
+        $stmt = mysqli_prepare($conn, $query);
+
+        if (!$stmt)
+        {
+            error_log('Error al preparar consulta de productos mas vendidos: ' . mysqli_error($conn));
+            send_json([
+                'ok' => false,
+                'message' => 'Error al obtener los productos mas vendidos'
+            ], 500);
+            return;
+        }
+
+        mysqli_stmt_bind_param($stmt, 'i', $limit);
+
+        if (!mysqli_stmt_execute($stmt)) 
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'No se pudieron recuperar los productos mas vendidos'
+            ], 500);
+            return;
+        }
+
+        $result = mysqli_stmt_get_result($stmt);
+        $productos = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+        mysqli_stmt_close($stmt);
+        mysqli_free_result($result);
+
+        send_json([
+            'ok' => true,
+            'data' => $productos
+        ], 200);
     }
 
     /**
@@ -252,7 +320,8 @@
     function actualizar_producto($conn, $id)
     {
         // Validar que se proporciono un ID
-        if (!$id) {
+        if (!$id) 
+        {
             send_json([
                 'ok' => false,
                 'message' => 'Se requiere el ID del producto'
@@ -270,7 +339,8 @@
         $stock = isset($_PUT['stock']) ? (int) $_PUT['stock'] : null;
 
         // Validar que al menos un campo se esta actualizando
-        if (!$nombre && $precio === null && !$descripcion && $stock === null) {
+        if (!$nombre && $precio === null && !$descripcion && $stock === null) 
+        {
             send_json([
                 'ok' => false,
                 'message' => 'Se requiere al menos un campo para actualizar'
@@ -283,32 +353,37 @@
         $tipos = '';
         $valores = [];
 
-        if ($nombre) {
+        if ($nombre) 
+        {
             $campos[] = 'nombre = ?';
             $tipos .= 's';
             $valores[] = $nombre;
         }
 
-        if ($descripcion) {
+        if ($descripcion) 
+        {
             $campos[] = 'descripcion = ?';
             $tipos .= 's';
             $valores[] = $descripcion;
         }
 
-        if ($precio !== null && $precio > 0) {
+        if ($precio !== null && $precio > 0) 
+        {
             $campos[] = 'precio = ?';
             $tipos .= 'd';
             $valores[] = $precio;
         }
 
-        if ($stock !== null && $stock >= 0) {
+        if ($stock !== null && $stock >= 0) 
+        {
             $campos[] = 'stock = ?';
             $tipos .= 'i';
             $valores[] = $stock;
         }
 
         // Validar que haya campos validos para actualizar
-        if (empty($campos)) {
+        if (empty($campos))
+        {
             send_json([
                 'ok' => false,
                 'message' => 'No hay campos validos para actualizar'
@@ -327,7 +402,8 @@
         $stmt = mysqli_prepare($conn, $query);
 
         // Por si falla la preparacion de la consulta :(
-        if (!$stmt) {
+        if (!$stmt) 
+        {
             // Para ver el error completo en los logs
             error_log('Error al preparar la consulta: ' . $query . ' @@@ ' . mysqli_error($conn));
 
@@ -357,7 +433,8 @@
 
         mysqli_stmt_close($stmt);
 
-        if ($affected === 0) {
+        if ($affected === 0) 
+        {
             send_json([
                 'ok' => false,
                 'message' => 'Producto no encontrado o sin cambios'
@@ -380,7 +457,8 @@
     function eliminar_producto($conn, $id)
     {
         // Validar que se proporciono un ID
-        if (!$id) {
+        if (!$id) 
+        {
             send_json([
                 'ok' => false,
                 'message' => 'Se requiere el ID del producto'
@@ -394,7 +472,8 @@
         $stmt = mysqli_prepare($conn, $query_select);
 
         // Por si falla la preparacion de la consulta :(
-        if (!$stmt) {
+        if (!$stmt)
+        {
             // Para ver el error completo en los logs
             error_log('Error al preparar la consulta: ' . $query_select . ' @@@ ' . mysqli_error($conn));
 
@@ -427,7 +506,8 @@
         mysqli_free_result($result);
 
         // Si el producto no existe
-        if (!$producto) {
+        if (!$producto)
+        {
             send_json([
                 'ok' => false,
                 'message' => 'Producto no encontrado'
@@ -441,7 +521,8 @@
         $stmt = mysqli_prepare($conn, $query_delete);
 
         // Por si falla la preparacion de la consulta :(
-        if (!$stmt) {
+        if (!$stmt) 
+        {
             // Para ver el error completo en los logs
             error_log('Error al preparar la consulta: ' . $query_delete . ' @@@ ' . mysqli_error($conn));
 
@@ -469,11 +550,13 @@
         mysqli_stmt_close($stmt);
 
         // Eliminar la imagen del servidor si existe
-        if ($producto['imagen']) {
+        if ($producto['imagen']) 
+        {
             $config = require __DIR__ . '/../config/config.php';
             $imagen_path = realpath($config['upload_dir']) . DIRECTORY_SEPARATOR . $producto['imagen'];
             
-            if (file_exists($imagen_path)) {
+            if (file_exists($imagen_path)) 
+            {
                 unlink($imagen_path);
             }
         }
