@@ -13,6 +13,11 @@
                 continue;
             }
 
+            if (strpos($line, '=') === false)
+            {
+            continue; // Ignorar líneas sin "=" para evitar el Fatal Error
+            }
+
             // Dividir cada linea en clave y valor 
             list($key, $value) = explode('=', $line, 2);
             
@@ -26,6 +31,7 @@
         'db' => [
             'host' => $env['DB_HOST'] ?? '', 
             'name' => $env['DB_NAME'] ?? '', 
+            'port' => $env['DB_PORT'] ?? null,
             'user' => $env['DB_USER'] ?? '', 
             'pass' => $env['DB_PASS'] ?? '',
         ],

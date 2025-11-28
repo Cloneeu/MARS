@@ -420,5 +420,3 @@
         // Devolver los datos del usuario
         return $usuario;
     }
-
-?>

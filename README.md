@@ -58,6 +58,6 @@ mars/
 #### Desarrollado con mucho ❤️ por:
 
 - Alexandro Vega Ramírez
-- XXXX
+- Alondra Jacqueline González Corona
 - XXXX
 - XXXX
