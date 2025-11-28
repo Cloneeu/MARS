@@ -23,11 +23,11 @@
             break;
         
         case 'PUT':
-            // actualizar_review($conn, $id);
+            actualizar_review($conn, $id);
             break;
         
         case 'DELETE':
-            // eliminar_review($conn, $id);
+            eliminar_review($conn, $id);
             break;
 
         default:
@@ -296,6 +296,177 @@
         send_json([
             'ok' => true,
             'data' => $reviews
+        ], 200);
+    }
+
+    /**
+     * Funcion para actualizar una review
+     * @param mysqli Una conexion a la base de datos 
+     * @param int El ID de la review a actualizar
+     */
+    function actualizar_review($conn, $id)
+    {
+        // Validar que se proporciono un ID
+        if (!$id) 
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'Se requiere el ID de la reseña'
+            ], 400);
+            return;
+        }
+        
+        // Obtener los datos del body (JSON)
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        $calificacion = isset($data['calificacion']) ? intval($data['calificacion']) : null;
+        $comentario = isset($data['comentario']) ? trim($data['comentario']) : null;
+
+        // Validar que al menos un campo se esta actualizando
+        if ($calificacion === null && $comentario === null) 
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'Se requiere al menos un campo para actualizar (calificacion o comentario)'
+            ], 422);
+            return;
+        }
+
+        // Validar la calificacion si se proporciono
+        if ($calificacion !== null && ($calificacion < 1 || $calificacion > 5)) 
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'La calificacion debe estar entre 1 y 5'
+            ], 422);
+            return;
+        }
+
+        // Construir la consulta dinamicamente 
+        $campos = [];
+        $tipos = '';
+        $valores = [];
+
+        if ($calificacion !== null) 
+        {
+            $campos[] = 'calificacion = ?';
+            $tipos .= 'i';
+            $valores[] = $calificacion;
+        }
+
+        if ($comentario !== null) 
+        {
+            $campos[] = 'comentario = ?';
+            $tipos .= 's';
+            $valores[] = $comentario;
+        }
+
+        // Agregar el ID al final de los parametros
+        $tipos .= 'i';
+        $valores[] = $id;
+
+        // Consulta para actualizar
+        $query = "UPDATE reviews SET " . implode(', ', $campos) . " WHERE id_review = ?";
+
+        $stmt = mysqli_prepare($conn, $query);
+
+        if (!$stmt) 
+        {
+            error_log('Error al preparar la consulta: ' . $query . ' @@@ ' . mysqli_error($conn));
+            send_json([
+                'ok' => false,
+                'message' => 'Error al actualizar la reseña'
+            ], 500);
+            return;
+        }
+
+        mysqli_stmt_bind_param($stmt, $tipos, ...$valores);
+
+        if (!mysqli_stmt_execute($stmt))
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'No se pudo actualizar la review'
+            ], 500);
+            return;
+        }
+
+        $affected = mysqli_stmt_affected_rows($stmt);
+        mysqli_stmt_close($stmt);
+
+        if ($affected === 0) 
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'Reseña no encontrada o sin cambios'
+            ], 404);
+            return;
+        }
+
+        send_json([
+            'ok' => true,
+            'message' => 'Reseña actualizada exitosamente'
+        ], 200);
+    }
+    
+    /**
+     * Funcion para eliminar una review
+     * @param mysqli Una conexion a la base de datos 
+     * @param int El ID de la review a eliminar
+     */
+    function eliminar_review($conn, $id)
+    {
+        // Validar que se proporciono un ID
+        if (!$id) 
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'Se requiere el ID de la reseña'
+            ], 400);
+            return;
+        }
+
+        // Eliminar la review de la base de datos
+        $query = "DELETE FROM reviews WHERE id_review = ?";
+
+        $stmt = mysqli_prepare($conn, $query);
+
+        if (!$stmt) 
+        {
+            error_log('Error al preparar la consulta: ' . $query . ' @@@ ' . mysqli_error($conn));
+            send_json([
+                'ok' => false,
+                'message' => 'Error al eliminar la reseña'
+            ], 500);
+            return;
+        }
+
+        mysqli_stmt_bind_param($stmt, 'i', $id);
+
+        if (!mysqli_stmt_execute($stmt))
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'No se pudo eliminar la reseña'
+            ], 500);
+            return;
+        }
+
+        $affected = mysqli_stmt_affected_rows($stmt);
+        mysqli_stmt_close($stmt);
+
+        if ($affected === 0) 
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'Reseña no encontrada'
+            ], 404);
+            return;
+        }
+
+        send_json([
+            'ok' => true,
+            'message' => 'Reseña eliminada exitosamente'
         ], 200);
     }
 
