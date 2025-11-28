@@ -38,7 +38,7 @@
                 send_json(['ok' => false, 'message' => 'Metodo no permitido'], 405);
                 break;
             }
-            // actualizar_estado_orden($conn, $id);
+            actualizar_estado_orden($conn, $id);
             break;
         
         case 'cancel':
@@ -47,7 +47,7 @@
                 send_json(['ok' => false, 'message' => 'Metodo no permitido'], 405);
                 break;
             }
-            // cancelar_orden($conn, $id);
+            cancelar_orden($conn, $id);
             break;
         
         case 'my-orders':
@@ -56,7 +56,7 @@
                 send_json(['ok' => false, 'message' => 'Metodo no permitido'], 405);
                 break;
             }
-            // obtener_mis_ordenes($conn);
+            obtener_mis_ordenes($conn);
             break;
 
         default:
@@ -304,6 +304,7 @@
         foreach ($ordenes as &$orden) 
         {
             $detalles = obtener_detalles_orden($conn, $orden['id_orden']);
+            $orden['detalles'] = $detalles;
             $orden['total'] = calcular_total_orden($detalles);
         }
 
@@ -311,6 +312,321 @@
             'ok' => true,
             'data' => $ordenes
         ], 200);
+    }
+
+    /**
+     * Funcion para obtener las ordenes del usuario actual
+     * @param mysqli La conexion a la base de datos
+     */
+    function obtener_mis_ordenes($conn)
+    {
+        $usuario = obtener_usuario_actual($conn);
+
+        if (!$usuario) 
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'No autorizado'
+            ], 401);
+            return;
+        }
+
+        $query = "SELECT id_orden, created_at, estado
+                  FROM ordenes
+                  WHERE id_usuario = ?";
+
+        $stmt = mysqli_prepare($conn, $query);
+
+        if (!$stmt) 
+        {
+            error_log('Error al preparar consulta de mis ordenes: ' . mysqli_error($conn));
+            send_json([
+                'ok' => false,
+                'message' => 'Error al obtener las ordenes'
+            ], 500);
+            return;
+        }
+
+        mysqli_stmt_bind_param($stmt, 'i', $usuario['id_usuario']);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $ordenes = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        mysqli_stmt_close($stmt);
+
+        // Agregar el total a cada orden
+        foreach ($ordenes as &$orden) 
+        {
+            $detalles = obtener_detalles_orden($conn, $orden['id_orden']);
+            $orden['detalles'] = $detalles;
+            $orden['total'] = calcular_total_orden($detalles);
+        }
+
+        send_json([
+            'ok' => true,
+            'data' => $ordenes
+        ], 200);
+    }
+
+    /**
+     * Funcion para actualizar el estado de una orden (de pendiente a pagada o enviada)
+     * Esto solo para admins :)
+     * @param mysqli La conexion a la base de datos
+     * @param int El ID de la orden
+     */
+    function actualizar_estado_orden($conn, $id)
+    {
+        if (!$id) 
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'Se requiere el ID de la orden'
+            ], 400);
+            return;
+        }
+
+        $usuario = obtener_usuario_actual($conn);
+
+        if (!$usuario) 
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'No autorizado'
+            ], 401);
+            return;
+        }
+
+        // Solo admins pueden actualizar el estado
+        if ($usuario['rol'] !== 'admin')
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'No tienes permisos para actualizar ordenes'
+            ], 403);
+            return;
+        }
+
+        $inputs = json_decode(file_get_contents('php://input'), true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) 
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'JSON invalido'
+            ], 400);
+            return;
+        }
+
+        $estado = $inputs['estado'] ?? '';
+
+        if (!in_array($estado, ['pendiente', 'pagada', 'enviada'])) 
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'Estado no valido. Opciones: pendiente, pagada o enviada'
+            ], 422);
+            return;
+        }
+
+        // Verificar que la orden existe
+        $query = "SELECT id_orden, estado 
+                    FROM ordenes 
+                    WHERE id_orden = ?";
+        $stmt = mysqli_prepare($conn, $query);
+        mysqli_stmt_bind_param($stmt, 'i', $id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $orden = mysqli_fetch_assoc($result);
+        mysqli_stmt_close($stmt);
+
+        if (!$orden) 
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'Orden no encontrada'
+            ], 404);
+            return;
+        }
+
+        // Actualizar el estado
+        $query_update = "UPDATE ordenes 
+                            SET estado = ? 
+                            WHERE id_orden = ?";
+        $stmt = mysqli_prepare($conn, $query_update);
+
+        if (!$stmt) 
+        {
+            error_log('Error al preparar consulta de actualizacion: ' . mysqli_error($conn));
+            send_json([
+                'ok' => false,
+                'message' => 'Error al actualizar la orden'
+            ], 500);
+            return;
+        }
+
+        mysqli_stmt_bind_param($stmt, 'si', $estado, $id);
+        
+        if (!mysqli_stmt_execute($stmt))
+        {
+            mysqli_stmt_close($stmt);
+            send_json([
+                'ok' => false,
+                'message' => 'Error al actualizar el estado'
+            ], 500);
+            return;
+        }
+
+        mysqli_stmt_close($stmt);
+
+        send_json([
+            'ok' => true,
+            'message' => 'Estado actualizado exitosamente',
+            'data' => [
+                'id_orden' => $id,
+                // Para q se vea el cambio
+                'estado_anterior' => $orden['estado'],  
+                'estado_nuevo' => $estado
+            ]
+        ], 200);
+    }
+
+    /**
+     * Funcion para cancelar una orden
+     * Los usuarios pueden cancelar su propia orden si esta pendiente
+     * Los admins pueden cancelar cualquier orden
+     * @param mysqli La conexion a la base de datos 
+     * @param int El ID de la orden
+     */
+    function cancelar_orden($conn, $id)
+    {
+        if (!$id)
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'Se requiere el ID de la orden'
+            ], 400);
+            return;
+        }
+
+        $usuario = obtener_usuario_actual($conn);
+
+        if (!$usuario)
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'No autorizado'
+            ], 401);
+            return;
+        }
+
+        // Verificar que la orden existe
+        $query_check = "SELECT id_orden, id_usuario, estado 
+                        FROM ordenes 
+                        WHERE id_orden = ?";
+        $stmt = mysqli_prepare($conn, $query_check);
+        mysqli_stmt_bind_param($stmt, 'i', $id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $orden = mysqli_fetch_assoc($result);
+        mysqli_stmt_close($stmt);
+
+        if (!$orden)
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'Orden no encontrada'
+            ], 404);
+            return;
+        }
+
+        // Verificar permisos, solo admins o el dueño de la orden
+        if ($usuario['rol'] !== 'admin' && $orden['id_usuario'] !== $usuario['id_usuario'])
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'No tienes permisos para cancelar esta orden'
+            ], 403);
+            return;
+        }
+
+        // Solo se pueden cancelar ordenes pendientes, excepto si es un admin
+        if ($orden['estado'] !== 'pendiente' && $usuario['rol'] !== 'admin')
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'Solo se pueden cancelar ordenes pendientes'
+            ], 400);
+            return;
+        }
+
+        // Por si las moscas
+        if ($orden['estado'] === 'cancelada') 
+        {
+            send_json([
+                'ok' => false,
+                'message' => 'La orden ya esta cancelada'
+            ], 400);
+            return;
+        }
+
+        // Hacer checkpoint para revertir en caso de error
+        mysqli_begin_transaction($conn);
+
+        try 
+        {
+            // Obtener los detalles para restaurar el stock
+            $detalles = obtener_detalles_orden($conn, $id);
+
+            // Restaurar el stock de cada producto
+            foreach ($detalles as $detalle)
+            {
+                $query_stock = "UPDATE productos 
+                                    SET stock = stock + ? 
+                                    WHERE id_producto = ?";
+                $stmt_stock = mysqli_prepare($conn, $query_stock);
+                mysqli_stmt_bind_param($stmt_stock, 'ii', $detalle['cantidad'], $detalle['id_producto']);
+                
+                if (!mysqli_stmt_execute($stmt_stock))
+                {
+                    throw new Exception('Error al restaurar stock: ' . mysqli_error($conn));
+                }
+                mysqli_stmt_close($stmt_stock);
+            }
+
+            // Actualizar el estado a cancelada
+            $query_cancel = "UPDATE ordenes 
+                                SET estado = 'cancelada' 
+                                WHERE id_orden = ?";
+            $stmt = mysqli_prepare($conn, $query_cancel);
+            mysqli_stmt_bind_param($stmt, 'i', $id);
+            
+            if (!mysqli_stmt_execute($stmt)) 
+            {
+                throw new Exception('Error al cancelar la orden: ' . mysqli_error($conn));
+            }
+
+            mysqli_stmt_close($stmt);
+            // Hacer el commit en la DB para guardar los cambios
+            mysqli_commit($conn);
+
+            send_json([
+                'ok' => true,
+                'message' => 'Orden cancelada exitosamente',
+                'data' => [
+                    'id_orden' => $id,
+                ]
+            ], 200);
+
+        } 
+        catch (Exception $e) 
+        {
+            // Revertir los cambios en caso de error
+            mysqli_rollback($conn);
+            error_log($e->getMessage());
+            send_json([
+                'ok' => false,
+                'message' => 'Error al cancelar la orden'
+            ], 500);
+        }
     }
 
     // HELPERS :)
