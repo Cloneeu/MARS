@@ -13,9 +13,10 @@
                 continue;
             }
 
+            // Ignorar líneas sin "="
             if (strpos($line, '=') === false)
             {
-            continue; // Ignorar líneas sin "=" para evitar el Fatal Error
+            continue; 
             }
 
             // Dividir cada linea en clave y valor 
@@ -31,7 +32,6 @@
         'db' => [
             'host' => $env['DB_HOST'] ?? '', 
             'name' => $env['DB_NAME'] ?? '', 
-            'port' => $env['DB_PORT'] ?? null,
             'user' => $env['DB_USER'] ?? '', 
             'pass' => $env['DB_PASS'] ?? '',
         ],

@@ -1,10 +1,9 @@
 <?php
-
     require_once __DIR__ . '/_headers.php';
     require_once __DIR__ . '/../config/database.php';
     require_once __DIR__ . '/../helpers/send_json.php';
 
-$conn = get_db_connection(); // <--- Aquí es donde falla
+    $conn = get_db_connection(); 
 
     // Obtener el metodo HTTP 
     $method = $_SERVER['REQUEST_METHOD'];
@@ -570,3 +569,5 @@ $conn = get_db_connection(); // <--- Aquí es donde falla
             'message' => 'Producto eliminado exitosamente'
         ], 200);
     }
+
+?>

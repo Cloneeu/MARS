@@ -17,10 +17,7 @@
             $db['user'], // Nombre del usuario 
             $db['pass'], 
             $db['name'], // Nombre de la DB
-            $db['port'] 
         );
-
-        
 
         // Por si falla la conexion
         if (!$conn)
