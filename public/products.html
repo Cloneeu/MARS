@@ -6,55 +6,86 @@
     <title> All Products ⌚ </title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="..." crossorigin="anonymous" referrerpolicy="no-referrer" />
-
+    <link rel="stylesheet" href="./css/products.css">
+  <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
   </head>
   <body>
+      <header class="header-custom d-flex align-items-center shadow-sm">
+        <div class="container-fluid d-flex align-items-center">
+          <div class="me-5">
+            <h2 class="m-0 fw-bold">Mars</h2>
+            <small class="text-muted">watch store</small>
+          </div>
 
-    <nav class="navbar bg-dark d-flex justify-content-center align-items-center">
-      <span style="text-align: center; color: aliceblue; font-size: 40px;"> All Products </span>    
-    </nav>
+          <span class="me-4 small fw-semibold"
+            >40+ <span class="fw-normal">International brands</span></span
+          >
 
-    
-    <div id="productos-contenedor" class="contenedor-productos">
+          <nav class="d-flex gap-5 ms-auto me-auto menu-links">
+            <a href="#" class="nav-link fs-5">All watches</a>
+          
+          </nav>
+
+          <div class="d-flex gap-4 iconos">
+          
+            <!-- <i class="bi bi-person-circle fs-4"> login</i> -->
+             <a href="cart.html" style="color: black !important;">
+                Carrito
+               <i class="bi bi-bag fs-4"></i>
+             </a>
+            
+          </div>
         </div>
+      </header>
 
-  <nav class="navbar ms-auto bg-dark justify-content-center align-items-center  padding: 0;">
-    <a href="index.html">  
-    <i  class="fas fa-home" style="text-align: center; color: aliceblue; font-size: 30px;"></i> 
-    </a>   
-  </nav>
+
+      <span style="text-align: center; color: aliceblue; font-size: 40px;"> All Products </span>    
+ 
+
+    
+      <div id="productos-contenedor" class="contenedor-productos">
+      </div>
+
+      <nav class="navbar ms-auto bg-dark justify-content-center align-items-center  padding: 0;">
+        <a href="index.html" style="color: white  !important;">  
+          Home
+        <i  class="fas fa-home" style="text-align: center; color: aliceblue; font-size: 10px;"> </i>  
+        </a>   
+      </nav>
 
 
 
     
 
-    <div class="modal fade" id="modalResenas" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
+      <div class="modal fade" id="modalResenas" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+          <div class="modal-content">
 
-          <div class="modal-header bg-dark text-white">
-            <h5 class="modal-title">Reseñas del Producto</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-          </div>
-
-          <div class="modal-body">
-            <div id="contenedor-resenas" class="text-center">
-              <p class="text-muted">Cargando reseñas...</p>
+            <div class="modal-header bg-dark text-white">
+              <h5 class="modal-title">Reseñas del Producto</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-          </div>
 
-          <div class="modal-footer">
-            <button class="btn btn-dark" data-bs-dismiss="modal">Cerrar</button>
-          </div>
+            <div class="modal-body">
+              <div id="contenedor-resenas" class="text-center">
+                <p class="text-muted">Cargando reseñas...</p>
+              </div>
+            </div>
 
+            <div class="modal-footer">
+              <button class="btn btn-dark" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+
+          </div>
         </div>
       </div>
-    </div>
 
 
 
-    <link rel="stylesheet" href="./css/products.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-    <script src="./js/products.js"></script>
-  </body>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+      <script src="./js/products.js"></script>
+    </body>
 </html>

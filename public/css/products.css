@@ -1,8 +1,50 @@
-.navbar
-{
-    height: 90px; 
-    background-color: #212529 !important; 
+
+
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Lato", sans-serif;
 }
+a
+{
+    text-decoration: none ;
+}
+.header-custom {
+    height: 70px;
+    background: #F7F9FB;
+    padding: 0px 30px;
+    box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.16);
+    position: relative; 
+}
+
+
+.menu-links .nav-link {
+    color: #000;
+    font-size: 14px;
+}
+
+.menu-links .nav-link:hover {
+    color: #00b9b3;
+}
+
+.iconos i {
+    cursor: pointer;
+}
+
+.iconos i:hover {
+    color: #00b9b3;
+}
+
+
+
+.navbari-lg
+{
+    background-color: #f2f2f2 !important; 
+}
+
 
 
 body

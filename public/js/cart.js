@@ -1,4 +1,5 @@
 const UPLOADS_BASE_PATH = 'http://localhost:8081/mars/public/uploads/';
+const API_URL = 'http://localhost:8081/mars/api/orders.php?action=create';
 
 
 
