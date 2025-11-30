@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Carrito 🛒</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+      .navbar {
+        height: 90px;
+        background-color: #212529 !important;
+      }
+
+      body {
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        font-family: serif;
+      }
+
+      .cart-container {
+        max-width: 900px;
+        margin: 40px auto;
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      }
+
+      .cart-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .cart-item img {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+        margin-right: 20px;
+      }
+
+      .qty-btn {
+        width: 30px;
+        height: 30px;
+        border: none;
+        background: #212529;
+        color: white;
+        border-radius: 5px;
+      }
+
+      .delete-btn {
+        border: none;
+        background: #d9534f;
+        color: white;
+        padding: 6px 10px;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <!-- NAV superior -->
+    <nav class="navbar d-flex justify-content-center align-items-center">
+      <span style="color: white; font-size: 35px;">Carrito de Compras</span>
+    </nav>
+
+    <!-- Contenedor -->
+    <div class="cart-container">
+      <h3 class="text-center mb-4">Tus Productos</h3>
+      <div id="cart-list"></div>
+
+      <div class="text-center mt-4">
+        <button id="cerrarOrden" class="btn btn-success btn-lg">
+          Cerrar Orden ✔
+        </button>
+      </div>
+    </div>
+
+    <!-- NAV inferior -->
+    <nav class="navbar bg-dark justify-content-center align-items-center mt-4">
+      <a href="index.html">
+        <i class="fas fa-home" style="color: white; font-size: 30px;"></i>
+      </a>
+    </nav>
+
+    <script src="./js/cart.js"></script>
+
+  </body>
+</html>
