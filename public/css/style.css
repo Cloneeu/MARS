@@ -7,6 +7,55 @@
   font-family: "Lato", sans-serif;
 }
 
+a
+{
+    text-decoration: none;
+}
+
+
+.left-side {
+    width: 50%;
+    background: linear-gradient(to right, #000, #1a1a1a, #2c2c2c);
+    position: relative;
+    padding: 50px;
+}
+
+.right-side {
+    width: 50%;
+    height: 100%;
+    background-image: url('https://relojesmaestrodeltiempo.com.mx/wp-content/uploads/2025/06/el-primer-plano-de-la-mano-en-guantes-del-vendedor-muestra-el-reloj-exclusivo-para-hombres-de-la-nueva-coleccion-en-la-joyeria-de-lujo-scaled-1707x1707.jpg'); 
+    background-size: cover;  
+    background-position: center;  
+}
+
+.promo-text .welcome {
+    font-size: 1.1rem;
+    letter-spacing: 3px;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    font-weight: 300;
+}
+
+.promo-text .sale-title {
+    font-size: 4.5rem; 
+    font-weight: 900;
+    line-height: 1; 
+    margin-bottom: 10px;
+    color: #00b9b3; 
+}
+
+.promo-text .discount {
+    font-size: 1.8rem;
+    font-weight: 400;
+}
+
+.promo-text .highlight {
+    font-size: 2.5rem; 
+    font-weight: 900;
+    color: #00b9b3; 
+}
+
+
 /* header styles */
 .header-custom {
     height: 70px;
@@ -15,6 +64,7 @@
     box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.16);
     position: relative; 
 }
+
 
 .menu-links .nav-link {
     color: #000;

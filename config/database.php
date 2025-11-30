@@ -16,7 +16,7 @@
             $db['host'],
             $db['user'], // Nombre del usuario 
             $db['pass'], 
-            $db['name'] // Nombre de la DB
+            $db['name'], // Nombre de la DB
         );
 
         // Por si falla la conexion

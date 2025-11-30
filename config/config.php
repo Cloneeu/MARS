@@ -13,6 +13,12 @@
                 continue;
             }
 
+            // Ignorar líneas sin "="
+            if (strpos($line, '=') === false)
+            {
+            continue; 
+            }
+
             // Dividir cada linea en clave y valor 
             list($key, $value) = explode('=', $line, 2);
             
