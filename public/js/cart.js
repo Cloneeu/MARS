@@ -74,13 +74,38 @@ function eliminarItem(index) {
 }
 
 // Cerrar orden
-document.getElementById("cerrarOrden").addEventListener("click", () => {
+document.getElementById("cerrarOrden").addEventListener("click",async () => {
     if (carrito.length === 0) {
         alert("No tienes productos en el carrito");
         return;
     }
+    const productos = carrito.map(item => ({
+        id_producto: item.id_producto,  // Asegúrate que el campo se llame así
+        cantidad: item.cantidad       // Y este también
+    }));
 
-    alert("¡Orden cerrada con éxito!");
-    localStorage.removeItem("carrito");
-    location.reload();
+    console.log(productos)
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({productos})
+        });
+
+        console.log(response)
+        const data = await response.json();
+        console.log(data);
+        alert("¡Orden cerrada con éxito!");
+        localStorage.removeItem("carrito");
+        location.reload();
+       // return data;
+
+    } catch (error) {
+        console.error("Error registrando orden:", error);
+        return { ok: false, message: "Error de red" };
+    }
+
+    
 });
