@@ -57,5 +57,22 @@
     pointer-events: none;
 }
 
+.promo-row {
+    display: flex;
+    align-items: center;   /* CENTRA verticalmente los textos */
+    gap: 1rem;           /* espacio entre textos */
+}
 
+.promo-row .small {
+    font-size: 3rem;     /* ajusta según tu diseño */
+    color: #00B9B3;
+    margin: 0;
+}
+
+.promo-row .big {
+    font-size: 5rem;       /* tu tamaño grande */
+    font-weight: 900;
+    color: #00B9B3;
+    margin: 0;
+}
 
