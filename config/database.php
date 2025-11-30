@@ -12,12 +12,13 @@
         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
         // Hacer la conexion
-        $conn = mysqli_connect(
-            $db['host'],
-            $db['user'], // Nombre del usuario 
-            $db['pass'], 
-            $db['name'], // Nombre de la DB
-        );
+          $conn = mysqli_connect(
+        $db['host'],
+        $db['user'],
+        $db['pass'],
+        $db['name'],
+        $db['port']
+    );
 
         // Por si falla la conexion
         if (!$conn)

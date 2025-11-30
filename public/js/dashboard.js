@@ -1,5 +1,5 @@
-const API_URL = 'http://localhost:8888/mars/api/products.php';
-const UPLOADS_BASE_PATH = 'http://localhost:8888/mars/public/uploads/';
+const API_URL = 'http://localhost:8081/mars/api/products.php';
+const UPLOADS_BASE_PATH = 'http://localhost:8081/mars/public/uploads/';
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -22,6 +22,8 @@ async function obtenerYMostrarProductos() {
             }
         });
 
+        console.log(response)
+
         // Tu API de PHP usa 'send_json', que ya envía un status code, 
         // pero es buena práctica verificar si el fetch fue exitoso (status 200-299)
         if (!response.ok) {
@@ -30,7 +32,7 @@ async function obtenerYMostrarProductos() {
         }
 
         const productos = await response.json();
-
+        console.log(productos)
         // Limpiar el mensaje de carga antes de inyectar productos
         contenedor.innerHTML = ''; 
 

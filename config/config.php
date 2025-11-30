@@ -29,12 +29,13 @@
 
     // Retornar toda la configuracion 
     return [
-        'db' => [
-            'host' => $env['DB_HOST'] ?? '', 
-            'name' => $env['DB_NAME'] ?? '', 
-            'user' => $env['DB_USER'] ?? '', 
-            'pass' => $env['DB_PASS'] ?? '',
-        ],
+       'db' => [
+        'host' => $env['DB_HOST'] ?? 'localhost',
+        'port' => $env['DB_PORT'] ?? 3306,
+        'name' => $env['DB_NAME'] ?? '',
+        'user' => $env['DB_USER'] ?? '',
+        'pass' => $env['DB_PASS'] ?? '',
+    ],
         
         'base_url' => $env['BASE_URL'] ?? '',
         'upload_dir' => __DIR__ . '/' . ($env['UPLOAD_DIR'] ?? ''),
