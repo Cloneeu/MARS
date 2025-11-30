@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Lato", sans-serif;
+}
+
+.hero-landing{
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-banner{
+  
+   display: flex;
+  align-items: start;
+  justify-content: center;
+  flex-direction:column;
+  padding-left: 5rem;
+   height: 100vh; 
+  background-color: black;
+}
+.banner-wrapper {
+    height: 100vh;
+    position: relative;       /* necesario para overlay */
+    overflow: hidden;
+}
+
+/* La imagen recortada tipo máscara */
+.banner-img {
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+/* Capa negra degradada de arriba a abajo */
+.banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 1) 0%,      /* negro sólido a la izquierda */
+        rgba(0, 0, 0, 0.4) 60%,   /* va desapareciendo hacia la derecha */
+        rgba(0, 0, 0, 0) 100%     /* transparente a la derecha */
+    );
+
+    pointer-events: none;
+}
+
+.promo-row {
+    display: flex;
+    align-items: center;   /* CENTRA verticalmente los textos */
+    gap: 1rem;           /* espacio entre textos */
+}
+
+.promo-row .small {
+    font-size: 3rem;     /* ajusta según tu diseño */
+    color: #00B9B3;
+    margin: 0;
+}
+
+.promo-row .big {
+    font-size: 5rem;       /* tu tamaño grande */
+    font-weight: 900;
+    color: #00B9B3;
+    margin: 0;
+}
+
