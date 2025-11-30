@@ -175,44 +175,45 @@ async function abrirModalResenas(idProducto) {
     contenedor.innerHTML = `<p class="text-muted">Cargando reseñas...</p>`;
     console.log(idProducto)
     // ⚠️ Ajusta tu URL real
-    // const urlResenas = `http://localhost:8081/MARS/api/reviews.php?id=${idProducto}`;
+      const urlResenas = `http://localhost:8081/MARS/api/reviews.php?id_producto=${idProducto}`;
 
-    // try {
-    //     const response = await fetch(urlResenas);
-    //     const data = await response.json();
+      try {
+          const response = await fetch(urlResenas);
+          const data = await response.json();
+          console.log(data)
 
-    //     if (!data.ok || data.resenas.length === 0) {
-    //         contenedor.innerHTML = `<p class="text-muted">No hay reseñas aún.</p>`;
-    //     } else {
-    //         let html = `
-    //             <table class="table table-striped text-center">
-    //                 <thead class="table-dark">
-    //                     <tr>
-    //                         <th>Calificación</th>
-    //                         <th>Comentario</th>
-    //                         <th>Fecha</th>
-    //                     </tr>
-    //                 </thead>
-    //                 <tbody>
-    //         `;
+          if (!data.ok || data.resenas.length === 0) {
+              contenedor.innerHTML = `<p class="text-muted">No hay reseñas aún.</p>`;
+          } else {
+              let html = `
+                  <table class="table table-striped text-center">
+                      <thead class="table-dark">
+                          <tr>
+                              <th>Calificación</th>
+                              <th>Comentario</th>
+                              <th>Fecha</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+              `;
 
-    //         data.resenas.forEach(r => {
-    //             html += `
-    //                 <tr>
-    //                     <td>${r.calificacion} ⭐</td>
-    //                     <td>${r.comentario}</td>
-    //                     <td>${r.fecha}</td>
-    //                 </tr>
-    //             `;
-    //         });
+              data.resenas.forEach(r => {
+                  html += `
+                      <tr>
+                          <td>${r.calificacion} ⭐</td>
+                          <td>${r.comentario}</td>
+                          <td>${r.fecha}</td>
+                      </tr>
+                  `;
+              });
 
-    //         html += `</tbody></table>`;
-    //         contenedor.innerHTML = html;
-    //     }
+              html += `</tbody></table>`;
+              contenedor.innerHTML = html;
+          }
 
-    // } catch (err) {
-    //     contenedor.innerHTML = `<p class="text-danger">Error cargando reseñas.</p>`;
-    // }
+      } catch (err) {
+          contenedor.innerHTML = `<p class="text-danger">Error cargando reseñas.</p>`;
+      }
 
     // // Mostrar modal
      const modal = new bootstrap.Modal(document.getElementById("modalResenas"));
