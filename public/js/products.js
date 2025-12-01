@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!response.ok) {
     // No hay token o es inválido
     alert('Debes iniciar sesión');
-   // location.href = 'login.html';
+    location.href = 'login.html';
     return;
   }
 
