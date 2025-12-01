@@ -2,7 +2,8 @@ const API_URL = 'http://localhost:8081/mars/api/products.php';
 const UPLOADS_BASE_PATH = 'http://localhost:8081/mars/public/uploads/';
 
 const API_URL_ME = 'http://localhost:8081/MARS/api/users.php?action=me';
-
+const API_URL_User = 'http://localhost:8081/mars/api/users.php';
+const btn_logout = document.getElementById('logout-button')
 
 
 
@@ -30,6 +31,30 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 });
+
+btn_logout.addEventListener('click',async () =>{
+
+   try {
+    const response = await fetch(API_URL_User + '?action=logout', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json'
+      },
+      // ▶️ manda la cookie "token"
+    });
+
+    console.log(response)
+    console.log(await response.json())
+    
+         location.href = 'index.html';
+
+  } catch (error) {
+    console.error("Error cerrando actual", error);
+    return { ok: false };
+  }
+
+})
+
 
 
 const getCurrentUser = async () => {

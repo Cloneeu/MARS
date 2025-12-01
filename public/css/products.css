@@ -8,6 +8,20 @@
   box-sizing: border-box;
   font-family: "Lato", sans-serif;
 }
+
+.logout-btn {
+  background: black;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 25px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  transition: background 0.2s ease;
+}
 a
 {
     text-decoration: none ;

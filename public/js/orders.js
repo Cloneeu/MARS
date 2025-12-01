@@ -16,6 +16,7 @@ let orders = JSON.parse(localStorage.getItem("ordenes")) || [
 const API_URL_ORDERS_GET = 'http://localhost:8081/mars/api/orders.php?action=my-orders';
 const UPLOADS_BASE_PATH = 'http://localhost:8081/mars/public/uploads/';
 const API_URL_SET_REVIEW = ''
+const API_URL_ME = 'http://localhost:8081/MARS/api/users.php?action=me';
 
 // LISTA PRINCIPAL
 const ordersList = document.getElementById("orders-list");
@@ -33,9 +34,36 @@ let idProductoActual = 0;
 
 
 
+document.addEventListener('DOMContentLoaded', async () => {
+      
+      const response = await getCurrentUser();
+      console.log('Respuesta /me:', response);
+
+    if (!response.ok) {
+      // No hay token o es inválido
+      alert('Debes iniciar sesión');
+      location.href = 'login.html';
+      return;
+    }
+
+    const usuario = response.usuario;
+    console.log('Usuario actual:', usuario);
+    console.log('Rol:', usuario.rol);
+
+    
 
 
-app();
+      app();
+
+
+
+
+  });
+
+
+
+
+
 
 
 //Funcion para el rating de las reseñas 
@@ -227,3 +255,23 @@ function app(){
   mostrarOrdenes();
 
 }
+
+
+
+const getCurrentUser = async () => {
+  try {
+    const response = await fetch(API_URL_ME, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      },
+      credentials: 'include' // ▶️ manda la cookie "token"
+    });
+
+    return await response.json();
+
+  } catch (error) {
+    console.error("Error obteniendo usuario actual", error);
+    return { ok: false };
+  }
+};

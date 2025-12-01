@@ -41,6 +41,8 @@
 
 const API_URL_GET_PRODUCTS = 'http://localhost:8081/mars/api/products.php';
 const API_URL_ORDERS_GET = 'http://localhost:8081/mars/api/orders.php?action=list';
+const API_URL_User = 'http://localhost:8081/mars/api/users.php';
+const API_URL_ME = 'http://localhost:8081/MARS/api/users.php?action=me';
 
 const UPLOADS_BASE_PATH = 'http://localhost:8081/mars/public/uploads/';
 
@@ -55,12 +57,44 @@ const formMessage = document.getElementById("form-message");
 const modalDetalleOrden = new bootstrap.Modal(document.getElementById('modalDetalleOrden'));
 const detalleInfo = document.getElementById('detalleInfo');
 const detalleProductos = document.getElementById('detalleProductos');
+const btn_logout = document.getElementById('logout-button')
 let productoActual = null;
 let productos = null;
 let chart = null;
 
+
+document.addEventListener('DOMContentLoaded', async () => {
+      
+      const response = await getCurrentUser();
+      console.log('Respuesta /me:', response);
+
+    if (!response.ok) {
+      // No hay token o es inválido
+      alert('Debes iniciar sesión');
+      location.href = 'login.html';
+      return;
+    }
+
+    const usuario = response.usuario;
+    console.log('Usuario actual:', usuario);
+    console.log('Rol:', usuario.rol);
+
+      if(usuario.rol != 'admin')
+         location.href = 'login.html';
+      app();
+
+
+
+
+  });
+
+
+
 const app = ()=>{
 
+
+
+  
   traerProductos()
   traerOrdenes()
   grafica()
@@ -138,7 +172,28 @@ form.addEventListener("submit", async (e) => {
 });
 
 //{PARA PRODUCTOS}
+btn_logout.addEventListener('click',async () =>{
 
+   try {
+    const response = await fetch(API_URL_User + '?action=logout', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json'
+      },
+      // ▶️ manda la cookie "token"
+    });
+
+    console.log(response)
+    console.log(await response.json())
+    
+         location.href = 'index.html';
+
+  } catch (error) {
+    console.error("Error cerrando actual", error);
+    return { ok: false };
+  }
+
+})
 
 const traerProductos = async() => {
   try {
@@ -506,5 +561,21 @@ function prepararDatos(productos) {
    
 
 
+const getCurrentUser = async () => {
+  try {
+    const response = await fetch(API_URL_ME, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      },
+      credentials: 'include' // ▶️ manda la cookie "token"
+    });
 
-app();
+    return await response.json();
+
+  } catch (error) {
+    console.error("Error obteniendo usuario actual", error);
+    return { ok: false };
+  }
+};
+
