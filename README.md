@@ -59,5 +59,5 @@ mars/
 
 - Alexandro Vega Ramírez
 - Alondra Jacqueline González Corona
-- XXXX
-- XXXX
+- Jose de Jesus Gutierrez Cardenas (el chuy)
+- David Morales Teloxa 
