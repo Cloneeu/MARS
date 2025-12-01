@@ -32,7 +32,32 @@ let idProductoActual = null;
 
 
 
+
+
+
 app();
+
+
+//Funcion para el rating de las reseñas 
+
+
+let ratingSeleccionado = 0;
+
+document.querySelectorAll("#rating-stars .star").forEach(star => {
+    star.addEventListener("click", function () {
+        ratingSeleccionado = this.dataset.value;
+
+        // Actualizar visualmente
+        document.querySelectorAll("#rating-stars .star").forEach(s => {
+            s.classList.remove("selected");
+        });
+
+        for (let i = 0; i < ratingSeleccionado; i++) {
+            document.querySelectorAll("#rating-stars .star")[i].classList.add("selected");
+        }
+    });
+});
+
 
 
 
