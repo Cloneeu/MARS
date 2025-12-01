@@ -179,7 +179,7 @@
                     ON p.id_producto = d.id_producto
                   INNER JOIN ordenes o 
                     ON d.id_orden = o.id_orden
-                    WHERE o.estado IN ('pagada', 'enviada')
+                    WHERE o.estado IN ('pagada', 'enviada','pendiente')
                   GROUP BY p.id_producto, p.nombre, p.descripcion, p.precio, p.imagen, p.stock
                   ORDER BY total_vendido DESC
                   LIMIT ?";

@@ -57,10 +57,13 @@ const detalleInfo = document.getElementById('detalleInfo');
 const detalleProductos = document.getElementById('detalleProductos');
 let productoActual = null;
 let productos = null;
+let chart = null;
+
 const app = ()=>{
 
   traerProductos()
   traerOrdenes()
+  grafica()
 }
 
 
@@ -150,8 +153,7 @@ const traerProductos = async() => {
 
         productos = await response.json();
 
-        console.log(response)
-        console.log(productos)
+        
 
       
          tbodyProductos.innerHTML = ""; // limpiar tabla
@@ -218,11 +220,10 @@ document.getElementById("btnGuardarActualizacion").addEventListener("click", asy
         if (!response.ok) {
             throw new Error(`Error en la petición: HTTP ${response.status}`);
         }
-        console.log(response)
+       
     } catch (error) {
       console.log('error ACtializando',error)
     }
-    console.log("Producto actualizado:", productoActual);
     modalActualizar.hide();
 
     // Re-renderizar tabla
@@ -277,7 +278,6 @@ const traerOrdenes = async () => {
         }
 
         const data = await response.json();
-        console.log("Órdenes recibidas:", data);
 
         // Normalizar la respuesta
         let ordenesArray;
@@ -327,9 +327,8 @@ const traerOrdenes = async () => {
 };
 
 
-function abrirDetalleOrden(order) {
+const abrirDetalleOrden=(order) => {
     // Información general
-    console.log(order)
     detalleInfo.innerHTML = `
         <p><strong>Orden #:</strong> ${order.id_orden}</p>
         <p><strong>Cliente:</strong> ${order.nombre + order.apellido}</p>
@@ -364,6 +363,148 @@ function abrirDetalleOrden(order) {
 
     modalDetalleOrden.show();
 }
+
+
+//PARA LOS GRAFICOS
+
+
+const grafica = async () => {
+  try {
+    const response = await fetch(API_URL_GET_PRODUCTS + '?action=best-sellers', {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error en la petición: HTTP ${response.status}`);
+    }
+
+    const productos_chart = await response.json();
+    console.log(productos_chart.data)
+    const datos = prepararDatos(productos_chart.data);
+
+    const ctx = document.getElementById('productosChart').getContext('2d');
+
+    // 🔥 Si ya existe una gráfica, destrúyela antes
+    if (chart) {
+      chart.destroy();
+    }
+
+    chart = new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: datos.labels,
+    datasets: [
+      {
+        label: 'Stock',
+        data: datos.stocks,
+        yAxisID: 'y-unidades',
+        backgroundColor: 'rgba(54, 162, 235, 0.6)', // azul
+      },
+      {
+        label: 'Total vendido',
+        data: datos.vendidos,
+        yAxisID: 'y-unidades',
+        backgroundColor: 'rgba(255, 99, 132, 0.6)', // rojo
+      },
+      {
+        label: 'Precio',
+        data: datos.precios,
+        yAxisID: 'y-precio',
+        backgroundColor: 'rgba(255, 206, 86, 0.6)' // amarillo
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+
+    // 👉 FONDO COMPLETAMENTE BLANCO
+    plugins: {
+      legend: { position: 'top' },
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            const label = context.dataset.label || '';
+            const value = context.parsed.y;
+            if (context.dataset.yAxisID === 'y-precio') {
+              return `${label}: $ ${Number(value).toLocaleString('es-MX', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              })}`;
+            } else {
+              return `${label}: ${value}`;
+            }
+          }
+        }
+      },
+      // 👉 Fondo general blanco
+      backgroundColor: '#ffffff'
+    },
+
+    interaction: {
+      mode: 'index',
+      intersect: false,
+    },
+
+    scales: {
+      x: {
+        stacked: false, // 👉 ya no apiladas
+        grid: {
+          color: '#ffffff',       // 👉 fondo blanco
+          borderColor: '#ffffff'
+        }
+      },
+      'y-unidades': {
+        type: 'linear',
+        position: 'left',
+        beginAtZero: true,
+        grid: {
+          color: '#ffffff',       // 👉 fondo blanco
+          borderColor: '#ccc'     // borde suave gris
+        }
+      },
+      'y-precio': {
+        type: 'linear',
+        position: 'right',
+        beginAtZero: true,
+        grid: {
+          drawOnChartArea: false
+        }
+      }
+    }
+  }
+});
+
+
+  } catch (error) {
+    console.log('error', error);
+  }
+};
+
+
+
+
+function prepararDatos(productos) {
+      const labels = productos.map(p => p.nombre);
+      const precios = productos.map(p => {
+        const n = typeof p.precio === 'string' ? p.precio.replace(',', '.') : p.precio;
+        return Number.parseFloat(n) || 0;
+      });
+      const stocks = productos.map(p => Number.parseInt(p.stock) || 0);
+      const vendidos = productos.map(p => {
+        // total_vendido puede venir como string
+        const v = typeof p.total_vendido === 'string' ? p.total_vendido.replace(',', '') : p.total_vendido;
+        return Number.parseInt(v) || 0;
+      });
+
+      return { labels, precios, stocks, vendidos };
+    }
+
+
+    // Configuración Chart.js - barras agrupadas, dos ejes (left: unidades, right: precio)
+   
+
 
 
 app();
