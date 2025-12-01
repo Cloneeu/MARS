@@ -166,7 +166,7 @@ function abrirModalResena(productId, nombre, idusuario) {
     modalResena.show();
 }
 // ------- ENVIAR RESEÑA -------
-document.getElementById("btnEnviarResena").addEventListener("click", () => {
+document.getElementById("btnEnviarResena").addEventListener("click", async () => {
     const comentario = document.getElementById("textoResena").value.trim();
 
     if (comentario === "") {
@@ -188,16 +188,36 @@ document.getElementById("btnEnviarResena").addEventListener("click", () => {
     };
     console.log("Objeto enviado al API:", dataParaAPI);
       const urlResenas = `http://localhost:8081/MARS/api/reviews.php`;
-    try {
-      fetch(urlResenas, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(dataParaAPI) })
+     try {
+        const response = await fetch(urlResenas, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dataParaAPI)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert("¡Gracias por tu reseña!");
+            modalResena.hide();
+        } else {
+            // Manejo de errores específicos
+            if (response.status === 409) {
+                alert("Ya has dejado una reseña para este producto.");
+            } else if (response.status === 422) {
+                alert("Error: faltan datos obligatorios para enviar la reseña.");
+            } else {
+                alert(result.message || "Ocurrió un error al enviar la reseña.");
+            }
+        }
 
     } catch (error) {
-      console.log('Error subiendo la fokin reseña' + error)
+        console.error("Error enviando la reseña:", error);
+        alert("Error de conexión al enviar la reseña. Intenta de nuevo.");
     }
     // Aquí harías el fetch POST
 
-    alert("Gracias por tu reseña!");
-    modalResena.hide();
+    
 });
 
 

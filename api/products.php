@@ -262,15 +262,20 @@
             // Path donde se va a guardar la imagen
             $dest = realpath($config['upload_dir']) . DIRECTORY_SEPARATOR . $fname;
 
+            if (!move_uploaded_file($_FILES['imagen']['tmp_name'], $dest)) {
+                send_json(['ok'=>false, 'message'=>'Error al subir la imagen'], 500);
+            return;
+}
+
             // Mover el archivo subido a la carpeta de uploads
-            if (!move_uploaded_file($_FILES['imagen']['tmp_name'], $dest))
-            {
-                send_json([
-                    'ok'=>false, 
-                    'message'=>'Error al subir la imagen'
-                ], 500);
-                return;
-            }
+            // if (!move_uploaded_file($_FILES['imagen']['tmp_name'], $dest))
+            // {
+            //     send_json([
+            //         'ok'=>false, 
+            //         'message'=>'Error al subir la imagen'
+            //     ], 500);
+            //     return;
+            // }
             $imagen_path = $fname;
         }        
 

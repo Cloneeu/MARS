@@ -25,8 +25,16 @@
             // Por si acaso hay espacios alrededor de la clave o el valor
             $env[trim($key)] = trim($value);
         }
+        
     }
+$rootDir = realpath(__DIR__ . '/..'); // asegura ruta absoluta
 
+// Carpeta dentro de public
+$uploadDir = $rootDir . '/public/uploads';
+// Crear carpeta si no existe
+if (!is_dir($uploadDir)) {
+    mkdir($uploadDir, 0775, true); // permisos rwxrwxr-x
+}
     // Retornar toda la configuracion 
     return [
        'db' => [
@@ -38,6 +46,6 @@
     ],
         
         'base_url' => $env['BASE_URL'] ?? '',
-        'upload_dir' => __DIR__ . '/' . ($env['UPLOAD_DIR'] ?? ''),
+        'upload_dir' => $uploadDir, // ruta absoluta segura    
     ];
 ?>

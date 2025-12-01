@@ -22,11 +22,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   console.log('Usuario actual:', usuario);
   console.log('Rol:', usuario.rol);
 
-  if (usuario.rol !== 'admin') {
-   // alert('No tienes permiso para ver esta página');
-    //location.href = 'dashboard.html';
-  }
-    
     
     
     obtenerYMostrarProductos();
@@ -181,25 +176,25 @@ async function abrirModalResenas(idProducto) {
 
       try {
           const response = await fetch(urlResenas);
-          const data = await response.json();
-          console.log(data)
+          const resenas = await response.json();
+          console.log('reses',resenas.data)
 
-          if (!data.ok || data.resenas.length === 0) {
-              contenedor.innerHTML = `<p class="text-muted">No hay reseñas aún.</p>`;
-          } else {
-              let html = `
-                  <table class="table table-striped text-center">
-                      <thead class="table-dark">
-                          <tr>
-                              <th>Calificación</th>
-                              <th>Comentario</th>
-                              <th>Fecha</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-              `;
+         if (!resenas.ok || (resenas.data?.length || 0) === 0) {
+    contenedor.innerHTML = `<p class="text-muted">No hay reseñas aún.</p>`;
+} else {
+    let html = `
+        <table class="table table-striped text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>Calificación</th>
+                    <th>Comentario</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
 
-              data.resenas.forEach(r => {
+              resenas.data.forEach(r => {
                   html += `
                       <tr>
                           <td>${r.calificacion} ⭐</td>
@@ -215,7 +210,7 @@ async function abrirModalResenas(idProducto) {
 
       } catch (err) {
             console.log(err)
-          contenedor.innerHTML = `<p class="text-danger">Error  carga ndo reseñas.</p>`;
+          contenedor.innerHTML = `<p class="text-danger">Error  cargando reseñas.</p>`;
       }
 
     // // Mostrar modal
