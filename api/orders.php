@@ -340,7 +340,7 @@
             return;
         }
 
-        $query = "SELECT id_orden, created_at, estado
+        $query = "SELECT id_orden, created_at, estado,id_usuario
                   FROM ordenes
                   WHERE id_usuario = ?";
 

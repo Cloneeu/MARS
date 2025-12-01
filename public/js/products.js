@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   console.log('Rol:', usuario.rol);
 
   if (usuario.rol !== 'admin') {
-    alert('No tienes permiso para ver esta página');
+   // alert('No tienes permiso para ver esta página');
     //location.href = 'dashboard.html';
   }
     
@@ -35,6 +35,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 });
+
+
 const getCurrentUser = async () => {
   try {
     const response = await fetch(API_URL_ME, {
@@ -212,7 +214,8 @@ async function abrirModalResenas(idProducto) {
           }
 
       } catch (err) {
-          contenedor.innerHTML = `<p class="text-danger">Error cargando reseñas.</p>`;
+            console.log(err)
+          contenedor.innerHTML = `<p class="text-danger">Error  carga ndo reseñas.</p>`;
       }
 
     // // Mostrar modal
