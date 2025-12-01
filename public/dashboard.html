@@ -41,10 +41,7 @@
           <span class="text-xl font-extrabold tracking-tight text-primary">MANAGEMENT APP</span>
         </div>
 
-        <div class="hidden sm:flex items-center text-sm text-gray-200">
-          <i class="fas fa-user-shield mr-2"></i>
-          <span class="font-mono">ADMIN</span>
-        </div>
+        
       </div>
     </header>
 
@@ -84,7 +81,7 @@
     </aside>
 
     <!-- alch no pude posicionar el div mas abajo para que se vea centrado -->
-    <main id="main-content-wrapper" class="pt-16 md:ml-64 p-4 sm:p-8 flex justify-center">
+    <main id="main-content-wrapper" class="pt-16 md:ml-64 p-4 sm:p-8 flex justify-center align-center">
 
       <div class="mt-4 w-full max-w-4xl bg-white shadow-xl rounded-xl p-6 md:p-10">
         
@@ -96,8 +93,12 @@
               <i class="fas fa-plus-circle mr-2"></i> Add Product
             </button>
 
-            <button id="tab-orders" role="tab" aria-controls="panel-orders" aria-selected="false" data-tab-target="orders" class="tab-button py-2 px-4 text-sm font-medium focus:outline-none transition-colors duration-300 border-b-2 border-transparent text-gray-500 hover:text-gray-700">
-              <i class="fas fa-list-alt mr-2"></i> View Orders
+            <button id="tab-productos" role="tab" aria-controls="panel-productos" aria-selected="false" data-tab-target="productos" class="tab-button py-2 px-4 text-sm font-medium focus:outline-none transition-colors duration-300 border-b-2 border-transparent text-gray-500 hover:text-gray-700">
+              <i class="fas fa-list-alt mr-2"></i> Ver Productos
+            </button>
+
+             <button id="tab-orders" role="tab" aria-controls="panel-orders" aria-selected="false" data-tab-target="orders" class="tab-button py-2 px-4 text-sm font-medium focus:outline-none transition-colors duration-300 border-b-2 border-transparent text-gray-500 hover:text-gray-700">
+              <i class="fas fa-list-alt mr-2"></i> Ver Ordenes
             </button>
           </div>
         </div>
@@ -145,8 +146,8 @@
 
           </div>
 
-          <div id="panel-orders" role="tabpanel" aria-labelledby="tab-orders" class="tab-panel hidden">
-            <h2 class="text-2xl font-semibold text-gray-700 mb-4 border-b pb-2">View Orders</h2>
+          <div id="panel-productos" role="tabpanel" aria-labelledby="tab-productos" class="tab-panel hidden">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4 border-b pb-2">Ver Productos</h2>
 
             <div class="overflow-x-auto rounded-lg shadow-md border border-gray-200">
               <table class="min-w-full divide-y divide-gray-200">
@@ -165,7 +166,30 @@
                 </tbody>
               </table>
             </div>
+
+           
           </div>
+
+           <div id="panel-orders" role="tabpanel" aria-labelledby="tab-orders" class="tab-panel hidden">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4 border-b pb-2">Ver Ordenes</h2>
+
+            <div class="overflow-x-auto rounded-lg shadow-md border border-gray-200">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IdOrden</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VerDetalle/Eliminar</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  
+                </tbody>
+              </table>
+            </div>
         </div>
       </div>
     </main>
@@ -206,6 +230,33 @@
   </div>
 </div>
 
+
+
+<div class="modal fade" id="modalDetalleOrden" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title">Detalle de Orden</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <div id="detalleInfo" class="mb-3"></div>
+        
+        <h6>Productos de la Orden:</h6>
+        <div id="detalleProductos" class="overflow-y-auto" style="max-height:300px;">
+          <!-- Lista de productos -->
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+
+    </div>
+  </div>
+</div>
      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script src="./js/dashboard.js"></script>
      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>

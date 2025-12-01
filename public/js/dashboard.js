@@ -40,6 +40,8 @@
 
 
 const API_URL_GET_PRODUCTS = 'http://localhost:8081/mars/api/products.php';
+const API_URL_ORDERS_GET = 'http://localhost:8081/mars/api/orders.php?action=list';
+
 const UPLOADS_BASE_PATH = 'http://localhost:8081/mars/public/uploads/';
 
 const tbodyProductos = document.querySelector("tbody");
@@ -49,12 +51,16 @@ const modalActualizar = new bootstrap.Modal(document.getElementById("modalActual
 const form = document.getElementById("product-form");
 const formMessage = document.getElementById("form-message");
 // Producto actualmente seleccionado para actualizar
+
+const modalDetalleOrden = new bootstrap.Modal(document.getElementById('modalDetalleOrden'));
+const detalleInfo = document.getElementById('detalleInfo');
+const detalleProductos = document.getElementById('detalleProductos');
 let productoActual = null;
 let productos = null;
 const app = ()=>{
 
   traerProductos()
-
+  traerOrdenes()
 }
 
 
@@ -128,7 +134,7 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-
+//{PARA PRODUCTOS}
 
 
 const traerProductos = async() => {
@@ -252,8 +258,112 @@ async function borrarProducto(id) {
         alert("Ocurrió un error al intentar eliminar el producto.");
     }
 }
-    // aquí podrías hacer fetch DELETE a tu API
 
+// {PARA ORDENES }
+
+const tbodyOrdenes = document.querySelector("#panel-orders tbody"); // tbody de la tabla de órdenes
+
+const traerOrdenes = async () => {
+    tbodyOrdenes.innerHTML = ""; // limpiar tabla
+
+    try {
+        const response = await fetch(API_URL_ORDERS_GET, {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error en la petición: HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Órdenes recibidas:", data);
+
+        // Normalizar la respuesta
+        let ordenesArray;
+        if (Array.isArray(data)) {
+            ordenesArray = data;
+        } else if (Array.isArray(data.orders)) {
+            ordenesArray = data.orders;
+        } else if (Array.isArray(data.data)) {
+            ordenesArray = data.data;
+        } else {
+            throw new Error("La API no devolvió un array de órdenes");
+        }
+
+        // Renderizar cada orden en un <tr>
+        ordenesArray.forEach(o => {
+            const tr = document.createElement("tr");
+            tr.className = "hover:bg-gray-50";
+
+            tr.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${o.id_orden}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${o.nombre + o.apellido}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${o.created_at}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-bold">$${o.total}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${o.estado === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                        ${o.estado}
+                    </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <button class="btn btn-sm btn-primary me-2" onclick='abrirDetalleOrden(${JSON.stringify(o)})'">Detalle</button>
+                </td>
+            `;
+
+            tbodyOrdenes.appendChild(tr);
+        });
+
+    } catch (error) {
+        console.error("Error al obtener órdenes:", error);
+        tbodyOrdenes.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center text-red-500 py-4">
+                    Error al cargar las órdenes: ${error.message}
+                </td>
+            </tr>
+        `;
+    }
+};
+
+
+function abrirDetalleOrden(order) {
+    // Información general
+    console.log(order)
+    detalleInfo.innerHTML = `
+        <p><strong>Orden #:</strong> ${order.id_orden}</p>
+        <p><strong>Cliente:</strong> ${order.nombre + order.apellido}</p>
+        <p><strong>Fecha:</strong> ${order.created_at}</p>
+        <p><strong>Total:</strong> $${order.total}</p>
+        <p><strong>Estado:</strong> ${order.estado}</p>
+    `;
+
+    // Limpiar lista de productos
+    detalleProductos.innerHTML = "";
+
+    // Recorrer los productos de la orden
+    if (Array.isArray(order.detalles) && order.detalles.length > 0) {
+        order.detalles.forEach(p => {
+            const div = document.createElement("div");
+            div.className = "d-flex justify-content-between align-items-center mb-2 p-2 border rounded";
+
+            div.innerHTML = `
+                <div>
+                    <strong>${p.nombre}</strong> - $${p.precio_unitario} <br>
+                    <strong>Cantidad </strong> - ${p.cantidad} <br>
+                  
+                </div>
+                
+            `;
+
+            detalleProductos.appendChild(div);
+        });
+    } else {
+        detalleProductos.innerHTML = `<p class="text-muted text-center">No hay productos en esta orden.</p>`;
+    }
+
+    modalDetalleOrden.show();
+}
 
 
 app();
